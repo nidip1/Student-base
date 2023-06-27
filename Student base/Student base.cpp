@@ -34,7 +34,6 @@ int main()
 		cout << "Количество набранных баллов\t";
 		ptesting[i].Get_Score();
 	}
-	//============================
 	for (int i = 0; i < CountofStudents; i++)						//вывод информации о студентах в файл
 	{
 		ptesting[i].Save_File();

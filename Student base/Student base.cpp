@@ -15,6 +15,7 @@ int main()
 	int amountofstudents = 0;										//счётчик студентов, сдающих заданную дисциплину
 	testing temp;													//объект класса для хранения промежуточных данных
 	char discipline[20]="";											//название предмета для сортировки студентов по баллам
+	//int equal;													//индекс объекта класса(студента), у которого средний балл по всем предметам одинаковый со следующим по порядку студентом
 
 	do
 	{
@@ -50,14 +51,21 @@ int main()
 				ptesting[i] = ptesting[i+1];
 				ptesting[i+1] = temp;
 			}
+			/*else if (ptesting[i + 1].Average_Score() == ptesting[i].Average_Score())
+			{
+				equal = i;
+			}*/
 		}
 		counter--;													//декремент счётчика итераций цыкла while
 	}
 
 	cout << "\nCтуденты по среднему баллу в порядке убывания" << endl;
-	for (int i = 0; i < CountofStudents; i++)
+	for (int i = 0; i < CountofStudents-1; i++)
 	{
-		cout<<ptesting[i].Get_name()<<endl;							//отображение имён студентов по среднему баллу в порядке убывания
+		if(ptesting[i + 1].Average_Score() != ptesting[i].Average_Score())
+			cout<<'\t' << ptesting[i].Get_name() << endl;						//отображение имён студентов по среднему баллу в порядке убывания
+		else 
+			cout << ptesting[i].Get_name() << '\t' << ptesting[i+1].Get_name() << endl;
 	}
 
 	cout << "\nВведите название предмета, по набранным баллам за который нужно сделать сортировку студентов"<< endl;

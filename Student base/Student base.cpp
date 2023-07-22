@@ -15,7 +15,6 @@ int main()
 	int amountofstudents = 0;										//счётчик студентов, сдающих заданную дисциплину
 	testing temp;													//объект класса для хранения промежуточных данных
 	char discipline[20]="";											//название предмета для сортировки студентов по баллам
-	//int equal;													//индекс объекта класса(студента), у которого средний балл по всем предметам одинаковый со следующим по порядку студентом
 
 	do
 	{
@@ -35,6 +34,7 @@ int main()
 		cout << "Количество набранных баллов\t";
 		ptesting[i].Get_Score();
 	}
+	
 	for (int i = 0; i < CountofStudents; i++)						//вывод информации о студентах в файл
 	{
 		ptesting[i].Save_File();
@@ -51,10 +51,6 @@ int main()
 				ptesting[i] = ptesting[i+1];
 				ptesting[i+1] = temp;
 			}
-			/*else if (ptesting[i + 1].Average_Score() == ptesting[i].Average_Score())
-			{
-				equal = i;
-			}*/
 		}
 		counter--;													//декремент счётчика итераций цыкла while
 	}
@@ -62,11 +58,21 @@ int main()
 	cout << "\nCтуденты по среднему баллу в порядке убывания" << endl;
 	for (int i = 0; i < CountofStudents-1; i++)
 	{
-		if(ptesting[i + 1].Average_Score() != ptesting[i].Average_Score())
-			cout<<'\t' << ptesting[i].Get_name() << endl;						//отображение имён студентов по среднему баллу в порядке убывания
-		else 
-			cout << ptesting[i].Get_name() << '\t' << ptesting[i+1].Get_name() << endl;
+		if (ptesting[i].Average_Score() != ptesting[i + 1].Average_Score())		//если средние баллы текущего и следующего объектов класса не равны
+		{
+			cout << ptesting[i].Get_name() << endl;					//отображение имён студентов по среднему баллу в порядке убывания
+			if (i == CountofStudents - 2)
+				cout<< ptesting[i + 1].Get_name()<<endl;			//отображение имени последнего объекта класса
+		}
+		else                                                        //если средние баллы текущего и следующего объектов класса равны выводим 2 имени в одну строку
+		{
+			cout << ptesting[i].Get_name() << '\t' << ptesting[i + 1].Get_name() << endl;	
+			i++;													//увеличиваем итератор чтоб не выводить 2 раза имя одного и того же студента
+			if (i == CountofStudents - 2)
+				cout << ptesting[i + 1].Get_name() << endl;			//отображение имени последнего объекта класса
+		}
 	}
+		
 
 	cout << "\nВведите название предмета, по набранным баллам за который нужно сделать сортировку студентов"<< endl;
 	cin >> discipline;
@@ -94,30 +100,22 @@ int main()
 		}
 	}
   
-	counter = amountofstudents;
+	counter = amountofstudents;										//инициализация счётчика пузырьковой сортировки
 	while (counter > 0)
 	{
-		for (int i = 0; i < amountofstudents-1; i++)
+		for (int i = 0; i < amountofstudents-1; i++)				//сортировка студентов по набранным баллам за данную дисциплину 
 		{
 			if (ptesting_discipline[i + 1].Get_Score_discipline(discipline) > ptesting_discipline[i].Get_Score_discipline(discipline))
 			{
 				temp = ptesting_discipline[i];
 				ptesting_discipline [i] = ptesting_discipline[i + 1];
 				ptesting_discipline[i + 1] = temp;
-			}
-			else 
-				if (ptesting_discipline[i + 1].Get_Score_discipline(discipline) == ptesting_discipline[i].Get_Score_discipline(discipline))
-				{
-					amountofstudents = -1;
-				}			
+			}	
 		}
 		counter--;
 	}
 	switch (amountofstudents)										//вывод результата сортировки студентов по набранным баллам за заданный предмет
 	{
-		case -1:
-			cout << "Количество баллов набранных студентами по "<< discipline << " равно\n";
-			break;
 		case 0:
 			cout << discipline <<" не сдавал ни один студент";
 			break;
@@ -128,9 +126,21 @@ int main()
 			cout << "Cтуденты по набранным баллам за " << discipline <<" в порядке убывания\n";			
 	}	
 	
-	for (int i = 0; i < amountofstudents; i++)
+	for (int i = 0; i < amountofstudents-1; i++)
 	{
-		cout << ptesting_discipline[i].Get_name() << endl;			//отображение имён студентов по набранному баллу по выбранному предмету в порядке убывания
+		if (ptesting_discipline[i].Get_Score_discipline(discipline) != ptesting_discipline[i+1].Get_Score_discipline(discipline))	//если баллы по заданному предмету текущего и следующего объектов класса не равны
+		{
+			cout << ptesting_discipline[i].Get_name() << endl;		//отображение имён студентов по набранному баллу по выбранному предмету в порядке убывания
+			if (i == amountofstudents - 2)
+				cout << ptesting_discipline[i + 1].Get_name() << endl;	//отображение имени последнего объекта класса
+		}
+		else                                                            //если средние баллы текущего и следующего объектов класса равны выводим 2 имени в одну строку
+		{
+			cout << ptesting_discipline[i].Get_name() << '\t' << ptesting_discipline[i + 1].Get_name() << endl;
+			i++;														//увеличиваем счёчик итераций чтоб не выводить 2 раза имя одного и того же студента
+			if (i == amountofstudents - 2)
+				cout << ptesting_discipline[i + 1].Get_name() << endl;	//отображение имени последнего объекта класса
+		}
 	}
 
 	Del_memory_obj(ptesting_discipline, amountofstudents);			//очистка выделенной динамической памяти под массив студентов, сдающих заданную дисциплину

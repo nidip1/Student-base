@@ -15,6 +15,7 @@ int main()
 	int amountofstudents = 0;										//счётчик студентов, сдающих заданную дисциплину
 	testing temp;													//объект класса для хранения промежуточных данных
 	char discipline[20]="";											//название предмета для сортировки студентов по баллам
+	bool equal = true;
 
 	do
 	{
@@ -58,18 +59,32 @@ int main()
 	cout << "\nCтуденты по среднему баллу в порядке убывания" << endl;
 	for (int i = 0; i < CountofStudents-1; i++)
 	{
-		if (ptesting[i].Average_Score() != ptesting[i + 1].Average_Score())		//если средние баллы текущего и следующего объектов класса не равны
+		equal = true;
+		if (ptesting[i].Average_Score() != ptesting[i+1].Average_Score())		//если средние баллы текущего и следующего объектов класса не равны
 		{
-			cout << ptesting[i].Get_name() << endl;					//отображение имён студентов по среднему баллу в порядке убывания			
+			equal = false;
+			//cout << ptesting[i-1].Get_name() << endl;					//отображение имён студентов по среднему баллу в порядке убывания			
 		}
-		else                                                        //если средние баллы текущего и следующего объектов класса равны выводим 2 имени в одну строку
+
+		if (equal)
 		{
-			cout << ptesting[i].Get_name() << '\t' << ptesting[i + 1].Get_name() << endl;	
+			cout << ptesting[i].Get_name() << '\t' << ptesting[i + 1].Get_name() << endl;
+			i++;
+		}
+		else 
+			cout << ptesting[i].Get_name() << endl;
+
+		if (i == CountofStudents - 2)
+			cout << ptesting[i + 1].Get_name() << endl;			//отображение имени последнего объекта класса
+		/*else                                                        //если средние баллы текущего и следующего объектов класса равны выводим 2 имени в одну строку
+		{
+			equal = true;
+			cout << ptesting[i].Get_name() << '\t' << ptesting[i-1].Get_name() << endl;	
 			i++;													//увеличиваем итератор чтоб не выводить 2 раза имя одного и того же студента
 		}
 		
 		if (i == CountofStudents - 2)
-			cout << ptesting[i + 1].Get_name() << endl;			//отображение имени последнего объекта класса
+			cout << ptesting[i + 1].Get_name() << endl;			//отображение имени последнего объекта класса*/
 	}
 		
 	do

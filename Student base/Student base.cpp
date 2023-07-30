@@ -13,9 +13,10 @@ int main()
 	int CountofStudents = 0;										//количество учащихся
 	int counter = 0;												//счётчик итераций цыкла while
 	int amountofstudents = 0;										//счётчик студентов, сдающих заданную дисциплину
+	int count_equal = 0;											//количество студентов с одинаковым средним баллом
 	testing temp;													//объект класса для хранения промежуточных данных
 	char discipline[20]="";											//название предмета для сортировки студентов по баллам
-	bool equal = true;
+	int * pequal = nullptr;											//указатель на массив индексов студентов с одинаковым средним баллом 
 
 	do
 	{
@@ -59,8 +60,8 @@ int main()
 	cout << "\nCтуденты по среднему баллу в порядке убывания" << endl;
 	for (int i = 0; i < CountofStudents-1; i++)
 	{
-		equal = true;
-		if (ptesting[i].Average_Score() != ptesting[i+1].Average_Score())		//если средние баллы текущего и следующего объектов класса не равны
+		pequal = new int[count_equal];
+		if (ptesting[i].Average_Score() == ptesting[i+1].Average_Score())		//если средние баллы текущего и следующего объектов класса не равны
 		{
 			equal = false;
 			//cout << ptesting[i-1].Get_name() << endl;					//отображение имён студентов по среднему баллу в порядке убывания			

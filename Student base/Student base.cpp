@@ -3,6 +3,7 @@
 testing* Add_obj_class(testing *obj, int amount);					//объявление функции добавления нового объекта класса(студента)
 void SetData(testing* obj, const int amount);						//объявление функции заполнения данных об учащемся
 void Del_memory_obj(testing* obj, int amount);						//объявление функции очистки выделенной динамической памяти
+int* Add_index_equal(int* pindex, int Count_equal);					//объявление функции добавления нового индекса массива студентов с одинаковым средним баллом
 
 int main()
 {
@@ -58,14 +59,23 @@ int main()
 	}
 
 	cout << "\nCтуденты по среднему баллу в порядке убывания" << endl;
-	for (int i = 0; i < CountofStudents-1; i++)
-	{
-		pequal = new int[count_equal];
-		if (ptesting[i].Average_Score() == ptesting[i+1].Average_Score())		//если средние баллы текущего и следующего объектов класса не равны
+	for (int i = 0; i < CountofStudents; i++)
+	{		
+		int k = 0;													//индекс элемента массива с одинаковым средним баллом
+		for (int j = 0; j < CountofStudents; j++)
 		{
-			equal = false;
-			//cout << ptesting[i-1].Get_name() << endl;					//отображение имён студентов по среднему баллу в порядке убывания			
+			if (ptesting[i].Average_Score() == ptesting[j].Average_Score())		//если средние баллы текущего и следующего объектов класса равны
+			{
+				count_equal++;
+				pequal = Add_index_equal(pequal, count_equal);
+				pequal[k] = j;
+				k++;
+							
+			}
 		}
+		
+
+
 
 		if (equal)
 		{
@@ -213,4 +223,22 @@ void Del_memory_obj(testing* obj, int amount)						//определение фу
 	}
 	delete[] obj;													//очистка динамической памяти, выделенной под массив объектов класса testing
     obj = nullptr; 
+}
+
+int * Add_index_equal(int * pindex, int Count_equal)				//выделение динамической памяти под массив индексов студентов с одинаковым средним баллом
+{
+	if (Count_equal == 0)
+		pindex = new int;
+	else
+	{ 
+		int * temp_index = new int[Count_equal + 1];
+		for (int i = 0; i < Count_equal; i++)
+		{
+			temp_index[i] = pindex[i];
+		}
+		delete [] pindex;
+		pindex = temp_index;
+		temp_index = nullptr;
+	}
+	return pindex;
 }

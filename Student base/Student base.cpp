@@ -3,7 +3,6 @@
 testing* Add_obj_class(testing *obj, int amount);					//объявление функции добавления нового объекта класса(студента)
 void SetData(testing* obj, const int amount);						//объявление функции заполнения данных об учащемся
 void Del_memory_obj(testing* obj, int amount);						//объявление функции очистки выделенной динамической памяти
-int* Add_index_equal(int* pindex, int Count_equal);					//объявление функции добавления нового индекса массива студентов с одинаковым средним баллом
 
 int main()
 {
@@ -14,10 +13,12 @@ int main()
 	int CountofStudents = 0;										//количество учащихся
 	int counter = 0;												//счётчик итераций цыкла while
 	int amountofstudents = 0;										//счётчик студентов, сдающих заданную дисциплину
-	int count_equal = 0;											//количество студентов с одинаковым средним баллом
+	int count_equal = 1;											//количество студентов с одинаковым средним баллом
 	testing temp;													//объект класса для хранения промежуточных данных
 	char discipline[20]="";											//название предмета для сортировки студентов по баллам
 	int * pequal = nullptr;											//указатель на массив индексов студентов с одинаковым средним баллом 
+	bool first_entrance = true;										//флаг, указывающий на первое совпадение средних баллов двух студентов
+	bool fit = false;												//флаг, указывающий на совпадение индекса текущего студента с одним из элементов массива индексов
 
 	do
 	{
@@ -57,50 +58,56 @@ int main()
 		}
 		counter--;													//декремент счётчика итераций цыкла while
 	}
-
-	cout << "\nCтуденты по среднему баллу в порядке убывания" << endl;
-	for (int i = 0; i < CountofStudents; i++)
-	{		
-		int k = 0;													//индекс элемента массива с одинаковым средним баллом
-		for (int j = 0; j < CountofStudents; j++)
+	
+	for (int i = 0; i < CountofStudents - 1; i++)
+	{
+		if (ptesting[i].Average_Score() == ptesting[i + 1].Average_Score())
 		{
-			if (ptesting[i].Average_Score() == ptesting[j].Average_Score())		//если средние баллы текущего и следующего объектов класса равны
-			{
-				count_equal++;
-				pequal = Add_index_equal(pequal, count_equal);
-				pequal[k] = j;
-				k++;
-							
+			count_equal++;											//подсчитываем количество студентов с одинаковым средним баллом 
+		}
+	}
+	pequal = new int[count_equal];									//выделение динамической памяти под массив индексов студентов с одинаковым средним баллом
+	
+	for (int i = 0, j = 0; i < CountofStudents-1, j < count_equal; i++)	//i-итератор студентов, j-итератор студентов с одинаковым средним баллом  
+	{
+		if (ptesting[i].Average_Score() == ptesting[i+1].Average_Score())		//если средние баллы текущего и следующего объектов класса равны
+		{
+			if (first_entrance)										//если first_entrance=true заносим индексы двух студентов в массив индексов студентов с одинаковым средним баллом
+			{								
+				pequal[j] = i;										//заносим в массив индексов индекс первого студента из двух совпавших по среднему баллу
+				pequal[j + 1] = i + 1;								//заносим в массив индексов индекс студента, совпашего по среднему баллу с i-м
+				j = j + 2;											//увеличение на 2 индекса массива с одинаковым средним баллом
+				first_entrance = false;								//снимаем флаг, указывающий на первое совпадение средних баллов двух студентов
 			}
-		}
-		
+			else
+			{
+				pequal[j] = i + 1;									//заносим в массив индексов индекс студента, совпашего по среднему баллу с i-м
+				j++;												//инкремент индекса массива индексов студентов с одинаковым средним баллом
+			}
+		}	
+	}
 
-
-
-		if (equal)
+	cout << "\nCтуденты по среднему баллу в порядке убывания\n";
+	for (int i = 0; i < CountofStudents; i++)						//перебираем элементы массива судентов
+	{
+		fit = false;												//сбрасываем флаг совпадения индекса текущего студента с одним из элементов массива индексов
+		for (int j = 0; j < count_equal; j++)						//перебираем элементы массива индексов студентов с совпадающим средним баллом
 		{
-			cout << ptesting[i].Get_name() << '\t' << ptesting[i + 1].Get_name() << endl;
-			i++;
+			if (i == pequal[j])										//если индекс студента совпадает с одним из элементов массива индексов
+			fit = true;												//устанавливаем флаг совпадения
 		}
-		else 
-			cout << ptesting[i].Get_name() << endl;
-
-		if (i == CountofStudents - 2)
-			cout << ptesting[i + 1].Get_name() << endl;			//отображение имени последнего объекта класса
-		/*else                                                        //если средние баллы текущего и следующего объектов класса равны выводим 2 имени в одну строку
-		{
-			equal = true;
-			cout << ptesting[i].Get_name() << '\t' << ptesting[i-1].Get_name() << endl;	
-			i++;													//увеличиваем итератор чтоб не выводить 2 раза имя одного и того же студента
-		}
-		
-		if (i == CountofStudents - 2)
-			cout << ptesting[i + 1].Get_name() << endl;			//отображение имени последнего объекта класса*/
+		if(fit)
+			cout << ptesting[i].Get_name() << '\t';					//выводим имя студента, у которого средний бал совпадает с другим студентом, через табуляцию следующий студент из массива индексов
+		else
+			cout << '\n' << ptesting[i].Get_name() << '\n';			//если нет совпадения среднего балла ни с одним студентом  выводим имя студента с новой строки
 	}
 		
+	delete [] pequal;												//очистка динамической памяти, выделенной под массив индексов студентов с одинаковым средним баллом
+	pequal = nullptr;
+
 	do
 	{
-		cout << "Хотите сделать сортировку студентов по баллам за определённый предмет\n";
+		cout << "\nХотите сделать сортировку студентов по баллам за определённый предмет\n";
 		cin >> Answer;
 		if (Answer == 'y')
 		{
@@ -109,7 +116,7 @@ int main()
 			amountofstudents = 0;
 			for (int i = 0; i < CountofStudents; i++)
 			{
-				for (int j = 0; j < ptesting[i].Get_size(); j++)				//определяем количество студентов, которые сдают заданную дисциплину
+				for (int j = 0; j < ptesting[i].Get_size(); j++)	//определяем количество студентов, которые сдают заданную дисциплину
 				{
 					if (discipline == ptesting[i].Get_discipline(j))
 					{
@@ -117,24 +124,24 @@ int main()
 					}
 				}
 			}
-			ptesting_discipline = new testing[amountofstudents];			//создание динамического массива студентов, которые сдают заданную дисциплину
+			ptesting_discipline = new testing[amountofstudents];	//создание динамического массива студентов, которые сдают заданную дисциплину
 
 			for (int i = 0, j = 0; i < CountofStudents, j < amountofstudents; i++)	//i-перебор объектов класса(судентов), j-перебор студентов, сдающих заданную дисциплину  
 			{
-				for (int k = 0; k < ptesting[i].Get_size(); k++)				//k-перебор учебных дисциплин, которые сдаёт данный студент 
+				for (int k = 0; k < ptesting[i].Get_size(); k++)	//k-перебор учебных дисциплин, которые сдаёт данный студент 
 				{
 					if (discipline == ptesting[i].Get_discipline(k))
 					{
-						ptesting_discipline[j] += ptesting[i];	   //заполнение массива студентов, сдающих заданную дисциплину, из общего массива с использованием перегрузки оператора +=
+						ptesting_discipline[j] += ptesting[i];	    //заполнение массива студентов, сдающих заданную дисциплину, из общего массива с использованием перегрузки оператора +=
 						j++;
 					}
 				}
 			}
 
-			counter = amountofstudents;										//инициализация счётчика пузырьковой сортировки
+			counter = amountofstudents;								//инициализация счётчика пузырьковой сортировки
 			while (counter > 0)
 			{
-				for (int i = 0; i < amountofstudents - 1; i++)				//сортировка студентов по набранным баллам за данную дисциплину 
+				for (int i = 0; i < amountofstudents - 1; i++)		//сортировка студентов по набранным баллам за данную дисциплину 
 				{
 					if (ptesting_discipline[i + 1].Get_Score_discipline(discipline) > ptesting_discipline[i].Get_Score_discipline(discipline))
 					{
@@ -145,7 +152,7 @@ int main()
 				}
 				counter--;
 			}
-			switch (amountofstudents)										//вывод результата сортировки студентов по набранным баллам за заданный предмет
+			switch (amountofstudents)								 //вывод результата сортировки студентов по набранным баллам за заданный предмет
 			{
 			case 0:
 				cout << discipline << " не сдавал ни один студент\n";
@@ -223,22 +230,4 @@ void Del_memory_obj(testing* obj, int amount)						//определение фу
 	}
 	delete[] obj;													//очистка динамической памяти, выделенной под массив объектов класса testing
     obj = nullptr; 
-}
-
-int * Add_index_equal(int * pindex, int Count_equal)				//выделение динамической памяти под массив индексов студентов с одинаковым средним баллом
-{
-	if (Count_equal == 0)
-		pindex = new int;
-	else
-	{ 
-		int * temp_index = new int[Count_equal + 1];
-		for (int i = 0; i < Count_equal; i++)
-		{
-			temp_index[i] = pindex[i];
-		}
-		delete [] pindex;
-		pindex = temp_index;
-		temp_index = nullptr;
-	}
-	return pindex;
 }

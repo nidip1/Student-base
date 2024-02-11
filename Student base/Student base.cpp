@@ -13,12 +13,10 @@ int main()
 	int CountofStudents = 0;										//количество учащихся
 	int counter = 0;												//счётчик итераций цыкла while
 	int amountofstudents = 0;										//счётчик студентов, сдающих заданную дисциплину
-	//int count_equal = 1;											//количество студентов с одинаковым средним баллом
 	testing temp;													//объект класса для хранения промежуточных данных
 	char discipline[20]="";											//название предмета для сортировки студентов по баллам
 	int * pcount_equal = nullptr;									//указатель на массив размеров массивов индексов студентов с одинаковым средним баллом
 	int ** pequal = nullptr;										//указатель на массив массивов индексов студентов с одинаковым средним баллом 
-	//bool first_entrance = true;										//флаг, указывающий на первое совпадение средних баллов двух студентов
 	bool fit = false;												//флаг, указывающий на совпадение элемента массива индексов текущего студента с элементом массива индексов предыдущего студента
 
 	do
@@ -60,13 +58,6 @@ int main()
 		counter--;													//декремент счётчика итераций цыкла while
 	}
 	
-	/*for (int i = 0; i < CountofStudents - 1; i++)
-	{
-		if (ptesting[i].Average_Score() == ptesting[i + 1].Average_Score())
-		{
-			count_equal++;											//подсчитываем количество студентов с одинаковым средним баллом 
-		}
-	}*/
 	pcount_equal = new int[CountofStudents];						//выделение динамической памяти под массив размеров массивов индексов студентов с одинаковым средним баллом
 	
 	for (int i = 0; i < CountofStudents; i++)						//i-итератор студентов, j-итератор студентов с одинаковым средним баллом  
@@ -193,22 +184,72 @@ int main()
 				cout << "Cтуденты по набранным баллам за " << discipline << " в порядке убывания\n";
 			}
 
-			for (int i = 0; i < amountofstudents - 1; i++)
+			pcount_equal = new int[amountofstudents];	//выделение динамической памяти под массив размеров массивов индексов студентов, набравших одинаковый балл за заданный предмет
+
+			for (int i = 0; i < amountofstudents; i++)						//i-итератор студентов, сдающих заданную дисциплину; j-итератор студентов с одинаковым баллом  
 			{
-				if (ptesting_discipline[i].Get_Score_discipline(discipline) != ptesting_discipline[i + 1].Get_Score_discipline(discipline))	//если баллы по заданному предмету текущего и следующего объектов класса не равны
+				pcount_equal[i] = 0;										//инициализируем элементы массива размеров
+
+				for (int j = 0; j < amountofstudents; j++)
 				{
-					cout << ptesting_discipline[i].Get_name() << endl;		//отображение имён студентов по набранному баллу по выбранному предмету в порядке убывания
-					if (i == amountofstudents - 2)
-						cout << ptesting_discipline[i + 1].Get_name() << endl;	//отображение имени последнего объекта класса
-				}
-				else                                                            //если средние баллы текущего и следующего объектов класса равны выводим 2 имени в одну строку
-				{
-					cout << ptesting_discipline[i].Get_name() << '\t' << ptesting_discipline[i + 1].Get_name() << endl;
-					i++;														//увеличиваем счёчик итераций чтоб не выводить 2 раза имя одного и того же студента
-					if (i == amountofstudents - 2)
-						cout << ptesting_discipline[i + 1].Get_name() << endl;	//отображение имени последнего объекта класса
+					if (ptesting_discipline[i].Get_Score_discipline(discipline) == ptesting_discipline[j].Get_Score_discipline(discipline))	//находим совпадение баллов студентов, сдающих заданную дисциплину
+					{
+						pcount_equal[i]++;									//и при совпадении увеличиваем на единицу элемент массива размеров
+					}
 				}
 			}
+
+			pequal = new int* [amountofstudents];		//выделение динамической памяти под массив массивов индексов студентов с одинаковым баллом за заданный предмет
+			for (int i = 0; i < amountofstudents; i++)
+			{
+				pequal[i] = new int[pcount_equal[i]];					//выделяем динамическую память под массив индексов студентов с одинаковым баллом за заданный предмет
+			}
+
+			for (int i = 0; i < amountofstudents; i++)	//i-итератор индексов студентов, сдающих заданную дисциплину; j-итератор индексов студентов с одинаковым баллом за заданный предмет
+			{
+				for (int j = 0, k = 0; j < amountofstudents, k < pcount_equal[i]; j++)	//k-итератор индексов массива индексов студентов с одинаковым баллом за заданный предмет
+				{
+					if (ptesting_discipline[i].Get_Score_discipline(discipline) == ptesting_discipline[j].Get_Score_discipline(discipline))	//находим совпадение баллов студентов
+					{
+						pequal[i][k] = j;									//и при совпадении записываем индекс в массив индексов студентов
+						k++;
+					}
+				}
+			}
+
+			for (int k = 0; k < pcount_equal[0]; k++)						//перебираем элементы первого массива индексов студентов с совпадающим баллом
+			{
+				cout << ptesting_discipline[pequal[0][k]].Get_name() << '\t';
+			}
+			cout << '\n';
+
+			for (int i = 1; i < amountofstudents; i++)						//перебираем элементы массива студентов
+			{
+				for (int k = 0; k < pcount_equal[i]; k++)					//перебираем элементы массива индексов студентов с совпадающим баллом
+				{
+					if (pequal[i][k] != pequal[i - 1][k])					//если элемент массива индексов текущего студента не совпадает с элементом массива индексов предыдущего студента
+					{
+						cout << ptesting_discipline[pequal[i][k]].Get_name() << '\t';	//выводим имена студентов через табуляцию
+						fit = true;
+					}
+				}
+				if (fit)
+				{
+					cout << '\n';
+					fit = false;
+				}
+			}
+
+			for (int i = 0; i < amountofstudents; i++)						//чистим динамическую память
+			{
+				delete[] pequal[i];											//чистим память массива индексов i-го студента с одинаковым баллом за заданный предмет
+			}
+			delete[] pequal;												//чистим память массивов индексов всех студентов с одинаковым баллом за заданный предмет
+			pequal = nullptr;
+
+			delete[] pcount_equal;											//чистим память размеров массивов индексов студентов с одинаковым баллом
+			pcount_equal = nullptr;
+
 		Del_memory_obj(ptesting_discipline, amountofstudents);			//очистка выделенной динамической памяти под массив студентов, сдающих заданную дисциплину
 		}
 	} while (Answer == 'y');
